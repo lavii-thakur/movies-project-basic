@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies App</title>
+
+    <style>
+        .main {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 2px solid black;
+            padding: 10px;
+        }
+
+        .card {
+            height: 400px;
+            width: 22%;
+            border: 1px solid red;
+            padding: 5px;
+        }
+
+        .img {
+            height: 80%;
+            width: 100%;
+        }
+
+        .title {
+            font-size: 22px;
+            font-weight: 300;
+            color: black;
+        }
+
+        .disc {
+            color: gray;
+        }
+
+        .category {
+            color: rgb(159, 17, 17);
+        }
+
+        .rate {
+            color: green;
+        }
+
+        #pagination button {
+            padding: 10px 20px;
+            background: black;
+            color: white;
+            border: none;
+            margin: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <input type="text" id="search" placeholder="Search..." onkeyup="resetAndFilter()">
+    <select id="category" onchange="resetAndFilter()">
+        <option value="all">All</option>
+        <option value="antman">Antman</option>
+        <option value="avengers">Avengers</option>
+        <option value="bp">Black Panther</option>
+        <option value="captain-america">Captain America</option>
+        <option value="ds">Doctor Strange</option>
+        <option value="spiderman">Spiderman</option>
+        <option value="thor">Thor</option>
+        <option value="deadpool">Deadpool</option>
+    </select>
+
+    <button onclick="goHome()">HOME</button>
+
+    <div id="main" class="main"></div>
+    <div id="pagination" style="text-align:center;"></div>
+
+    <script>
+
+        let movieList = [
+            { id: 1, category: "antman", title: "antman1", desc: "it is antman1", rate: 150, url: 'img/antman-1.jpg' },
+            { id: 2, category: "antman", title: "antman2", desc: "it is antman2", rate: 150, url: 'img/antman-2.jpg' },
+            { id: 3, category: "antman", title: "antman3", desc: "it is antman3", rate: 150, url: 'img/antman-3.jpg' },
+
+            { id: 4, category: "avengers", title: "avengers1", desc: "it is avengers1", rate: 200, url: 'img/avengers-1.jpg' },
+            { id: 5, category: "avengers", title: "avengers2", desc: "it is avengers2", rate: 200, url: 'img/avengers-2.jpg' },
+            { id: 6, category: "avengers", title: "avengers3", desc: "it is avengers3", rate: 200, url: 'img/avengers-3.jpg' },
+            { id: 7, category: "avengers", title: "avengers4", desc: "it is avangers4", rate: 200, url: 'img/avengers-4.jpg' },
+            { id: 8, category: "avengers", title: "avengers5", desc: "it is avengers4", rate: 200, url: 'img/avengers-5.jpg' },
+
+            { id: 9, category: "bp", title: "bp1", desc: "in is bp1", rate: 50, url: 'img/bp-1.jpg' },
+            { id: 10, category: "bp", title: "bp2", desc: "in is bp2", rate: 50, url: 'img/bp-2.jpg' },
+            { id: 11, category: "bp", title: "bp3", desc: "in is bp3", rate: 50, url: 'img/bp-3.jpg' },
+
+            { id: 12, category: "captain-america", title: "captain-america1", desc: "it is captain-america1", rate: 200, url: 'img/captain-america1.jpg' },
+            { id: 13, category: "captain-america", title: "captain-america2", desc: "it is captain-america2", rate: 200, url: 'img/captain-america2.jpg' },
+            { id: 14, category: "captain-america", title: "captain-america3", desc: "it is captain-america3", rate: 200, url: 'img/captain-america3.jpg' },
+            { id: 15, category: "captain-america", title: "captain-america4", desc: "it is captain-america4", rate: 200, url: 'img/captain-america4.jpg' },
+
+            { id: 16, category: "ds", title: "ds1", desc: "it is ds1", rate: 100, url: 'img/ds-1.jpg' },
+            { id: 17, category: "ds", title: "ds2", desc: "it is ds2", rate: 100, url: 'img/ds-2.jpg' },
+
+            { id: 18, category: "spiderman", title: "spiderman-1", rate: 200, desc: "it is spiderman-1", url: 'img/spiderman-1.jpg' },
+            { id: 19, category: "spiderman", title: "spiderman-2", rate: 200, desc: "it is spiderman-2", url: 'img/spiderman-2.jpg' },
+            { id: 20, category: "spiderman", title: "spiderman-3", rate: 200, desc: "it is spiderman-3", url: 'img/spiderman-3.jpg' },
+            { id: 21, category: "spiderman", title: "spiderman4", rate: 200, desc: "it is spiderman-4", url: 'img/spiderman-4.jpg' },
+
+            { id: 22, category: "thor", title: "thor1", rate: 500, desc: "it is thor1", url: 'img/thor-1.jpg' },
+            { id: 23, category: "thor", title: "thor2", rate: 500, desc: "it is thor2", url: 'img/thor-2.jpg' },
+            { id: 24, category: "thor", title: "thor3", rate: 500, desc: "it is thor2", url: 'img/thor-3.jpg' },
+            { id: 25, category: "thor", title: "thor4", rate: 500, desc: "it is thor4", url: 'img/thor-4.jpg' },
+            { id: 26, category: "thor", title: "thor5", rate: 500, desc: "it is thor5", url: 'img/thor-5.jpg' },
+
+            { id: 27, category: "deadpool", title: "deadpool", rate: 666, desc: "it is deadpool1", url: 'img/deadpool-1.jpg' },
+            { id: 28, category: "deadpool", title: "deadpool2", rate: 666, desc: "it is deadpool2", url: 'img/deadpool-2.jpg' },
+            { id: 29, category: "deadpool", title: "deadpool3", rate: 666, desc: "it is deadpool3", url: 'img/deadpool-3.jpg' },
+            { id: 30, category: "deadpool", title: "deadpool3", rate: 666, desc: "it is deadpool3", url: 'img/deadpool-3.jpg' },
+        ];
+
+        let filteredList = [...movieList];
+        let currentPage = 1;
+        let limit = 5;
+        let TOTAL_PAGES = 6;
+
+        function displayMovies() {
+
+            let main = document.getElementById("main");
+            main.innerHTML = "";
+
+            let start = (currentPage - 1) * limit;
+            let end = start + limit;
+
+            let showMovies = filteredList.slice(start, end);
+
+            showMovies.map(movie => {
+                main.innerHTML += `
+                <div class="card">
+                    <img src="${movie.url}" class="img">
+                    <div class='category'>${movie.category}</div>
+                    <div class='title'>${movie.title}</div>
+                    <div class='disc'>${movie.desc}</div>
+                    <div class='rate'>${movie.rate}</div>
+                </div>`;
+            });
+
+            showPagination();
+        }
+
+        function showPagination() {
+            document.getElementById("pagination").innerHTML = `
+                <button onclick="goHome()">Home</button>
+                <button onclick="prevPage()">Prev</button>
+                <span> Page ${currentPage} of 6 </span>
+                <button onclick="nextPage()">Next</button>
+                <button onclick="lastPage()">Last</button>
+            `;
+        }
+
+        function nextPage() {
+            if (currentPage < TOTAL_PAGES) currentPage++;
+            displayMovies();
+        }
+
+        function prevPage() {
+            if (currentPage > 1) currentPage--;
+            displayMovies();
+        }
+
+        function lastPage() {
+            currentPage = TOTAL_PAGES;
+            displayMovies();
+        }
+
+        function resetAndFilter() {
+            let text = document.getElementById("search").value.toLowerCase();
+            let cat = document.getElementById("category").value;
+
+            filteredList = movieList.filter(m =>
+                m.title.toLowerCase().includes(text) &&
+                (cat === "all" || m.category === cat)
+            );
+
+            currentPage = 1;
+            displayMovies();
+        }
+
+        function goHome() {
+            let main = document.getElementById("main");
+            main.innerHTML = "";
+
+            filteredList = [...movieList];
+
+            filteredList.map(movie => {
+                main.innerHTML += `
+                <div class="card">
+                    <img src="${movie.url}" class="img">
+                    <div class='category'>${movie.category}</div>
+                    <div class='title'>${movie.title}</div>
+                    <div class='disc'>${movie.desc}</div>
+                    <div class='rate'>${movie.rate}</div>
+                </div>`;
+            });
+
+            document.getElementById("pagination").innerHTML = "";
+        }
+
+        displayMovies();
+    </script>
+
+</body>
+
+</html>
